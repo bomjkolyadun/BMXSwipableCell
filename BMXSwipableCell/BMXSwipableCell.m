@@ -200,25 +200,29 @@ static const CGFloat kDefaultUITableViewDeleteControlWidth = 47;
 #ifdef BMX_SWIPABLE_CELL_LOG_ENABLED
     NSLog(@"constraints.count=%d", constraints.count);
 #endif
-    
+
     NSMutableArray *newConstraints = [@[] mutableCopy];
-    
+
     for (UIView *view in self.contentView.subviews) {
         if (view != self.scrollView) {
-            
+
             for (NSLayoutConstraint *constraint in constraints) {
-                
+
                 UIView *firstItem = (UIView *)constraint.firstItem;
                 UIView *secondItem = (UIView *)constraint.secondItem;
-                
+
+                if (!firstItem || !secondItem) {
+                    continue;
+                }
+
                 if (firstItem == self.contentView) {
                     firstItem = self.scrollViewContentView;
                 }
-                
+
                 if (secondItem == self.contentView) {
                     secondItem = self.scrollViewContentView;
                 }
-                
+
                 // create new constraint
                 NSLayoutConstraint *newConstraint = [NSLayoutConstraint constraintWithItem: firstItem
                                                                                  attribute: constraint.firstAttribute
@@ -230,16 +234,16 @@ static const CGFloat kDefaultUITableViewDeleteControlWidth = 47;
                 newConstraint.priority = constraint.priority;
                 [newConstraints addObject: newConstraint];
             }
-            
+
             [view removeFromSuperview];
             [self.scrollViewContentView addSubview: view];
         }
     }
-    
+
     if (newConstraints.count > 0) {
         [self.scrollViewContentView addConstraints:newConstraints];
     }
-    
+
     [self.contentView addSubview: self.scrollView];
 }
 
